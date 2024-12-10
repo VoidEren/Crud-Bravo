@@ -2,7 +2,8 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, useForm } from "@inertiajs/react";
 import { useState } from "react";
 
-export default function Create() {
+export default function Create({ categories }) {
+    // Inicialización del formulario con useForm
     const { data, setData, post, errors } = useForm({
         name: "",
         description: "",
@@ -16,11 +17,12 @@ export default function Create() {
 
     const [previewImages, setPreviewImages] = useState([]);
 
+    // Función para manejar el envío del formulario
     const handleSubmit = (e) => {
         e.preventDefault();
 
         // Validación simple en cliente
-        if (!data.name || !data.price || !data.stock) {
+        if (!data.name || !data.price || !data.stock || !data.category) {
             alert("Por favor, completa los campos obligatorios.");
             return;
         }
@@ -42,16 +44,19 @@ export default function Create() {
         });
     };
 
+    // Función para manejar el cambio de archivos
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
 
-        // Validar que sean imágenes
-        const validFiles = files.filter((file) =>
-            file.type.startsWith("image/")
+        // Validación de que los archivos sean imágenes y que no superen el tamaño máximo (5MB)
+        const validFiles = files.filter(
+            (file) => file.type.startsWith("image/") && file.size < 5000000 // 5MB máximo
         );
 
         if (validFiles.length === 0) {
-            alert("Por favor, selecciona solo archivos de tipo imagen.");
+            alert(
+                "Por favor, selecciona solo archivos de tipo imagen menores a 5MB."
+            );
             return;
         }
 
@@ -62,6 +67,7 @@ export default function Create() {
         setPreviewImages(previews);
     };
 
+    // Función para eliminar una imagen
     const removeImage = (index) => {
         setData(
             "images",
@@ -88,11 +94,7 @@ export default function Create() {
                     <div className="bg-white shadow-sm sm:rounded-lg p-6">
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {[
-                                {
-                                    label: "Nombre",
-                                    id: "name",
-                                    type: "text",
-                                },
+                                { label: "Nombre", id: "name", type: "text" },
                                 {
                                     label: "Descripción",
                                     id: "description",
@@ -106,7 +108,7 @@ export default function Create() {
                                 {
                                     label: "Categoría",
                                     id: "category",
-                                    type: "text",
+                                    type: "select",
                                 },
                                 { label: "Marca", id: "brand", type: "text" },
                                 { label: "Stock", id: "stock", type: "number" },
@@ -131,6 +133,54 @@ export default function Create() {
                                             }
                                             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                                         />
+                                    ) : field.type === "select" ? (
+                                        <select
+                                            id="category"
+                                            value={data.category}
+                                            onChange={(e) =>
+                                                setData(
+                                                    "category",
+                                                    e.target.value
+                                                )
+                                            }
+                                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        >
+                                            <option value="">
+                                                Selecciona una categoría
+                                            </option>
+                                            <option value=""></option>
+                                            {categories.map((category) => (
+                                                <option
+                                                    key={category.id}
+                                                    value={category.id}
+                                                >
+                                                    {category.name}
+                                                </option>
+                                            ))}
+
+                                            <select
+                                                id="brand"
+                                                value={data.brand}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        "brand",
+                                                        e.target.value
+                                                    )
+                                                }
+                                            >
+                                                <option value="">
+                                                    Selecciona una marca
+                                                </option>
+                                                {brands.map((brand) => (
+                                                    <option
+                                                        key={brand.id}
+                                                        value={brand.id}
+                                                    >
+                                                        {brand.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </select>
                                     ) : (
                                         <input
                                             type={field.type}
@@ -172,7 +222,7 @@ export default function Create() {
                                         id="images"
                                         onChange={handleFileChange}
                                         accept="image/*"
-                                        multiple // Permitir múltiples archivos
+                                        multiple
                                         style={{ display: "none" }}
                                     />
                                     {errors.images && (

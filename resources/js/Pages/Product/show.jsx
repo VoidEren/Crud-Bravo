@@ -15,26 +15,7 @@ export default function Dashboard() {
         { name: "Ajustes", icon: "⚙" },
     ];
 
-    const products = [
-        {
-            id: 1,
-            image: "https://via.placeholder.com/50",
-            name: "Producto 1",
-            description: "Descripción del producto 1",
-            price: "$10.00",
-            category: "Categoría A",
-            brand: "Marca X",
-        },
-        {
-            id: 2,
-            image: "https://via.placeholder.com/50",
-            name: "Producto 2",
-            description: "Descripción del producto 2",
-            price: "$20.00",
-            category: "Categoría B",
-            brand: "Marca Y",
-        },
-    ];
+    const products = [];
 
     const handleDeleteClick = (product) => {
         setProductToDelete(product);

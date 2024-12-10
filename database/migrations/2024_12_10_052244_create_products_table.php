@@ -15,14 +15,19 @@ return new class extends Migration
 
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('description');
-            $table->decimal('price');
-            $table->string('slug')->unique();
-            $table->string('sku');
+            $table->string('name'); // Product name
+            $table->string('description')->nullable(); // Optional description
+            $table->decimal('price', 10, 2); // Price with precision
+            $table->string('slug')->unique(); // Unique slug
+            $table->string('sku')->unique(); // Unique SKU
+            $table->integer('stock')->default(0); // Stock quantity
+            $table->string('images')->nullable(); // Image paths (optional)
+
+            // Foreign keys
             $table->foreignId('category_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('brand_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+
             $table->timestamps();
         });
 
